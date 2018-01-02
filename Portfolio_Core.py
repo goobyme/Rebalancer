@@ -1,44 +1,11 @@
-import requests
-import bs4
 import os
-import re
 import openpyxl
 import shutil
 import datetime
 import time
 import pprint
 import alpha_vantage
-
-print('Verifying Directory...\n')
-os.makedirs('Fund Data', exist_ok=True)
-os.chdir('Fund Data')
-
-
-def quote_scraper(ticker):
-
-    # Input; Ticker Input: return price of stock  TODO plus more info
-    # Note: function is embedded into Update Portfolio Data and not part of Portfolio Main class
-    base_url = 'https://finance.google.com/finance?q=' + ticker  # TODO insert try statement for error handling?
-    print('Downloading Quote for %s...' % ticker)
-    res = requests.get(base_url)
-    res.raise_for_status()
-
-    # Regex used as bs4 has difficulty picking up only the ticker price text
-    price_check = re.compile(r'(?<=>)\d+\.\d+')
-
-    gfinance_source = bs4.BeautifulSoup(res.text, 'lxml')
-    raw_price = gfinance_source.select('span[class=pr]')
-
-    # TODO Insert more data scrapping (asset classes could be easy for stocks (market cap) think about funds too)
-
-    # Error handling for anomalies in GFinance HTML
-    try:
-        ticker_price = price_check.search(str(raw_price[0]))
-    except IndexError:
-        print('Could not find quote data')
-        return None
-
-    return ticker_price.group(0)
+import Stock_Class as sc
 
 
 class PortfolioMain:
@@ -60,11 +27,6 @@ class PortfolioMain:
             pass
 
         # recall ticker and share value from variable storage file, TODO Make reading spread conditional
-
-    def spread2binaries(self, filepath):
-        # Will read and convert ticker share count data to binaries that can be saved to file and read directly in py
-        # might not be needed if can save entire object
-        pass
 
     def update_portfolio_data(self):
 
@@ -168,31 +130,7 @@ class PortfolioMain:
                 self.to_email_list.append(message)
 
     def change_alloc(self):
-
-        for ticker in self.ideal_alloc.keys():
-            while True:
-                print('Current Allocation: %s. What is your new allocation?' % (self.ideal_alloc[ticker]*100))
-                new_alloc = input()
-                if not new_alloc:
-                    break
-                elif new_alloc in range(0, 1):
-                    self.ideal_alloc[ticker] = new_alloc
-                    break
-                else:
-                    print('Invalid input. Allocation must be between 0 and 1')
-                    continue
-
-        while True:
-            print("Input new ticker value (press ENTER when done):")
-            new_ticker = input()
-            if not new_ticker:
-                break
-            print('Input allocation for new ticker:')
-            new_alloc = input()
-            self.ideal_alloc[new_ticker] = new_alloc
-
-        print('\n')
-        pprint.pprint(self.ideal_alloc)
+        pass
 
     def display_alloc(self):
 
@@ -203,7 +141,6 @@ class PortfolioMain:
 
         pass
 
-# Include sleep function here or in global function
 
 # TODO Build outer code structure. Program needs to open itself every week and send email if needed then sleep again
 # TODO Build inherited classes for alternate ideal allocations, or some other means of introducing differing alloc
