@@ -1,7 +1,7 @@
 import csv
-import openpyxl
 import re
 import logging
+import openpyxl
 
 
 class FileReader:
@@ -42,4 +42,13 @@ class FileReader:
     def parse_xlsx(self):
         # TODO add excel data reader
 
+        pass
+
+
+class AllocReader(FileReader):
+
+    def parse_csv(self):
+        pass
+
+    def parse_xlsx(self):
         pass
