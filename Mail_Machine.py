@@ -33,4 +33,3 @@ class MailMachine:
         smtobj.sendmail(self.email, self.email, self.format_message)
         print('Mail sent to {}'.format(self.email))
         smtobj.quit()
-
