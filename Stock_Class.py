@@ -13,8 +13,9 @@ class Security:
         self.position = float()
         self.alloc = float()
         self.net_growth = float()
-        self.target_alloc = float()
-        self.deviation_from_target = float()
+        self.target_alloc = 0
+        self.deviation_portfolio = float()
+        self.deviation_stock = float()
 
         self.stockdata = {}
         self.metadata = {}
@@ -31,6 +32,16 @@ class Security:
         if self.basis_amount == 0:
             self.basis_amount = self.position
         self.net_growth = (self.position-self.basis_amount)/self.basis_amount
+
+    def assign_real_alloc(self, port_total):
+        self.alloc = self.position / port_total
+        self.deviation_portfolio = self.alloc - self.target_alloc
+        self.deviation_stock = (self.deviation_portfolio*port_total)/self.position
+
+    def assign_target_alloc(self, target_alloc, port_total):
+        self.target_alloc = target_alloc
+        self.deviation_portfolio = self.alloc - target_alloc
+        (self.deviation_portfolio * port_total) / self.position
 
     def buy(self, amount=int(), price=int()):
         self.amount += amount
@@ -54,9 +65,6 @@ class Security:
             self.basis_amount -= (self.quote*amount/self.position) * self.basis_amount
             self.update(api=False)
 
-    def assign_real_alloc(self, port_total):
-        self.alloc = self.position/port_total
-
     def gen_data_export(self, ex_type='j'):
         j = {'ticker': self.ticker, 'amount': self.amount, 'basis_amount': self.basis_amount,
              'quote': self.quote, 'position': self.position, 'alloc': self.alloc, 'net_growth': self.net_growth,
@@ -69,6 +77,4 @@ class Security:
         else:
             logging.error('[Error] Improper export type chosen (choose between "p"andas or "j"son)')
 
-    def change_target_alloc(self, percentage):
-        pass
 
